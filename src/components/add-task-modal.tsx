@@ -5,19 +5,6 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Task } from '@/lib/stately'
 
-interface TaskModalProps {
-  isOpen: boolean
-  onClose: () => void
-  onSubmit: (taskData: {
-    title: string
-    description: string
-    priority: 'low' | 'medium' | 'high' | 'urgent'
-  }) => Promise<void>
-  isLoading?: boolean
-  editingTask?: Task | null
-  mode?: 'create' | 'edit'
-}
-
 const priorityEmojis = {
   low: '🟢',
   medium: '🟡',
@@ -32,10 +19,23 @@ const priorityColors = {
   urgent: 'border-red-200 bg-red-50 text-red-700'
 }
 
-export function TaskModal({ isOpen, onClose, onSubmit, isLoading = false, editingTask = null, mode = 'create' }: TaskModalProps) {
+export function TaskModal({onClose, onSubmit, isLoading = false, editingTask = null, mode = 'create' }: {
+  onClose: () => void
+  onSubmit: (taskData: {
+    title: string
+    description: string
+    priority: 'low' | 'medium' | 'high' | 'urgent'
+    tags: string[]
+  }) => Promise<void>
+  isLoading?: boolean
+  editingTask?: Task | null
+  mode?: 'create' | 'edit'
+}) {
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [priority, setPriority] = useState<'low' | 'medium' | 'high' | 'urgent'>('medium')
+  const [tags, setTags] = useState<string[]>([])
+  const [tagInput, setTagInput] = useState('')
 
   // Initialize form with editing task data when editing
   useEffect(() => {
@@ -43,6 +43,7 @@ export function TaskModal({ isOpen, onClose, onSubmit, isLoading = false, editin
       setTitle(editingTask.title)
       setDescription(editingTask.description)
       setPriority(editingTask.priority as 'low' | 'medium' | 'high' | 'urgent')
+      setTags(editingTask.tags || [])
     }
   }, [editingTask, mode])
 
@@ -53,14 +54,17 @@ export function TaskModal({ isOpen, onClose, onSubmit, isLoading = false, editin
     await onSubmit({
       title: title.trim(),
       description: description.trim(),
-      priority
+      priority,
+      tags
     })
 
     // Only reset form after successful creation, not edit
     if (mode === 'create') {
       setTitle('')
       setDescription('')
-      setPriority('medium')
+      setPriority('low')
+      setTags([])
+      setTagInput('')
     }
   }
 
@@ -68,12 +72,30 @@ export function TaskModal({ isOpen, onClose, onSubmit, isLoading = false, editin
     if (mode === 'create') {
       setTitle('')
       setDescription('')
-      setPriority('medium')
+      setPriority('low')
+      setTags([])
+      setTagInput('')
     }
     onClose()
   }
 
-  if (!isOpen) return null
+  const addTag = () => {
+    if (tagInput.trim() && !tags.includes(tagInput.trim())) {
+      setTags([...tags, tagInput.trim()])
+      setTagInput('')
+    }
+  }
+
+  const removeTag = (tagToRemove: string) => {
+    setTags(tags.filter(tag => tag !== tagToRemove))
+  }
+
+  const handleTagInputKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      e.preventDefault()
+      addTag()
+    }
+  }
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-300">
@@ -156,6 +178,89 @@ export function TaskModal({ isOpen, onClose, onSubmit, isLoading = false, editin
                 ))}
               </div>
             </div>
+
+            <div className="space-y-3">
+              <label htmlFor="tags" className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                🏷️ Tags
+              </label>
+              <div className="space-y-2">
+                <div className="flex gap-2">
+                  <input
+                    id="tags"
+                    type="text"
+                    value={tagInput}
+                    onChange={(e) => setTagInput(e.target.value)}
+                    onKeyDown={handleTagInputKeyPress}
+                    className="flex-1 px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white text-sm"
+                    placeholder="Add a tag..."
+                    disabled={isLoading}
+                  />
+                  <button
+                    type="button"
+                    onClick={addTag}
+                    disabled={!tagInput.trim() || isLoading}
+                    className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors text-sm"
+                  >
+                    Add
+                  </button>
+                </div>
+                {tags.length > 0 && (
+                  <div className="flex flex-wrap gap-1">
+                    {tags.map((tag, index) => (
+                      <span
+                        key={index}
+                        className="inline-flex items-center gap-1 px-2 py-1 bg-blue-100 text-blue-800 rounded-md text-xs"
+                      >
+                        {tag}
+                        <button
+                          type="button"
+                          onClick={() => removeTag(tag)}
+                          disabled={isLoading}
+                          className="ml-1 text-blue-600 hover:text-blue-800 disabled:cursor-not-allowed"
+                        >
+                          ×
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {mode === 'edit' && editingTask && (
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                  📊 Current Status
+                </label>
+                <div className="p-3 bg-gray-50 rounded-lg border">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">Status:</span>
+                    <span className={`px-3 py-1 rounded-full text-xs font-medium capitalize ${
+                      editingTask.status === 'completed' ? 'bg-green-100 text-green-800' :
+                      editingTask.status === 'in-progress' ? 'bg-blue-100 text-blue-800' :
+                      editingTask.status === 'archived' ? 'bg-gray-100 text-gray-800' :
+                      'bg-yellow-100 text-yellow-800'
+                    }`}>
+                      {editingTask.status.replace('-', ' ')}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between mt-2">
+                    <span className="text-sm text-gray-600">Created:</span>
+                    <span className="text-sm text-gray-800">
+                      {new Date(Number(editingTask.createdAt) * 1000).toLocaleDateString()}
+                    </span>
+                  </div>
+                  {editingTask.completedAt && (
+                    <div className="flex items-center justify-between mt-2">
+                      <span className="text-sm text-gray-600">Completed:</span>
+                      <span className="text-sm text-gray-800">
+                        {new Date(Number(editingTask.completedAt) * 1000).toLocaleDateString()}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
 
             <div className="flex gap-3 pt-2">
               <Button

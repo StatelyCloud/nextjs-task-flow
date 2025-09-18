@@ -98,6 +98,7 @@ export default function ProjectDetailPage() {
     title: string
     description: string
     priority: 'low' | 'medium' | 'high' | 'urgent'
+    tags: string[]
   }) => {
     try {
       // Convert the simple taskData to a full Task object for the API
@@ -109,7 +110,7 @@ export default function ProjectDetailPage() {
         priority: taskData.priority,
         assigneeId: BigInt(1), // TODO: Replace with actual user ID
         creatorId: BigInt(1), // TODO: Replace with actual user ID
-        tags: [],
+        tags: taskData.tags,
         isActive: true,
         dueDate: BigInt(Date.now() + 7 * 24 * 60 * 60 * 1000), // Default due in 7 days
         order: BigInt(1),
@@ -131,6 +132,7 @@ export default function ProjectDetailPage() {
     title: string
     description: string
     priority: 'low' | 'medium' | 'high' | 'urgent'
+    tags: string[]
   }) => {
     if (!editingTask) return
 
@@ -331,14 +333,14 @@ export default function ProjectDetailPage() {
       )}
 
       {/* Task Modal */}
-      <TaskModal
-        isOpen={showTaskModal}
+      {showTaskModal && <TaskModal
         onClose={handleCloseModal}
         onSubmit={modalMode === 'create' ? handleCreateTask : handleEditTask}
         isLoading={modalMode === 'create' ? isCreating : isEditing}
         editingTask={editingTask}
         mode={modalMode}
-      />
+      />}
+
 
       {/* Task Error Notifications */}
       {createError && (

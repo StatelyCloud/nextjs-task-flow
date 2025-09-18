@@ -5,8 +5,20 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Project } from '@/lib/stately'
 
-interface ProjectModalProps {
-  isOpen: boolean
+const defaultEmojis = ['🚀', '💼', '📊', '🎯', '💡', '🌟', '🔥', '⚡', '🎨', '🛠️', '📈', '🏆']
+const defaultColors = [
+  '#3B82F6', '#8B5CF6', '#EF4444', '#F59E0B',
+  '#10B981', '#F97316', '#EC4899', '#6366F1',
+  '#14B8A6', '#84CC16', '#F43F5E', '#8B5A2B'
+]
+
+export function ProjectModal({
+  onClose,
+  onSubmit,
+  isLoading = false,
+  editingProject = null,
+  mode = 'create'
+}: {
   onClose: () => void
   onSubmit: (projectData: {
     name: string
@@ -18,23 +30,7 @@ interface ProjectModalProps {
   isLoading?: boolean
   editingProject?: Project | null
   mode?: 'create' | 'edit'
-}
-
-const defaultEmojis = ['🚀', '💼', '📊', '🎯', '💡', '🌟', '🔥', '⚡', '🎨', '🛠️', '📈', '🏆']
-const defaultColors = [
-  '#3B82F6', '#8B5CF6', '#EF4444', '#F59E0B',
-  '#10B981', '#F97316', '#EC4899', '#6366F1',
-  '#14B8A6', '#84CC16', '#F43F5E', '#8B5A2B'
-]
-
-export function ProjectModal({
-  isOpen,
-  onClose,
-  onSubmit,
-  isLoading = false,
-  editingProject = null,
-  mode = 'create'
-}: ProjectModalProps) {
+}) {
   const [name, setName] = useState('')
   const [description, setDescription] = useState('')
   const [emoji, setEmoji] = useState('🚀')
@@ -84,8 +80,6 @@ export function ProjectModal({
     }
     onClose()
   }
-
-  if (!isOpen) return null
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-300">

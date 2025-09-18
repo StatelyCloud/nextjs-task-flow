@@ -1,10 +1,5 @@
 import { cn } from '@/lib/styles'
 
-interface LoadingProps {
-  className?: string
-  variant?: 'spinner' | 'skeleton' | 'dots'
-}
-
 const LoadingSpinner = ({ className }: { className?: string }) => (
   <svg 
     className={cn('animate-spin h-6 w-6', className)} 
@@ -32,7 +27,10 @@ const LoadingDots = ({ className }: { className?: string }) => (
   </div>
 )
 
-export function Loading({ className, variant = 'spinner' }: LoadingProps) {
+export function Loading({ className, variant = 'spinner' }: {
+  className?: string
+  variant?: 'spinner' | 'skeleton' | 'dots'
+}) {
   const components = {
     spinner: LoadingSpinner,
     skeleton: LoadingSkeleton,

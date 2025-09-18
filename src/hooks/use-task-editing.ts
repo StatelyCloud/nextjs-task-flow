@@ -5,6 +5,7 @@ interface EditTaskData {
   title: string
   description: string
   priority: 'low' | 'medium' | 'high' | 'urgent'
+  tags: string[]
 }
 
 export function useTaskEditing() {
@@ -21,6 +22,7 @@ export function useTaskEditing() {
         title: updates.title,
         description: updates.description,
         priority: updates.priority,
+        tags: updates.tags,
         updatedAt: BigInt(Math.floor(Date.now() / 1000))
       }
 

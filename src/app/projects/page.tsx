@@ -164,14 +164,15 @@ export default function ProjectsPage() {
         </Card>
       )}
 
-      <ProjectModal
-        isOpen={isEditModalOpen}
-        onClose={handleCloseEditModal}
-        onSubmit={handleEditSubmit}
-        isLoading={isEditing}
-        editingProject={editingProject}
-        mode="edit"
-      />
+      {isEditModalOpen && (
+        <ProjectModal
+          onClose={handleCloseEditModal}
+          onSubmit={handleEditSubmit}
+          isLoading={isEditing}
+          editingProject={editingProject}
+          mode="edit"
+        />
+      )}
     </div>
   )
 }

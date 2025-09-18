@@ -90,8 +90,7 @@ export async function createProject(project: Omit<Project, '$typeName' | 'id' | 
 }
 
 export async function getProject(projectId: bigint): Promise<Project | undefined> {
-  const keyPath = `/project-${projectId}`
-  return await client.get("Project", keyPath)
+  return await client.get("Project", `/project-${projectId}`)
 }
 
 export async function updateProject(updates: Partial<Project>): Promise<Project> {
@@ -106,15 +105,22 @@ export async function updateProject(updates: Partial<Project>): Promise<Project>
 }
 
 export async function deleteProject(projectId: bigint): Promise<void> {
-  const keyPath = `/project-${projectId}`
-  return await client.del(keyPath)
+  await client.transaction(async (tx) => {
+    // Delete all tasks associated with the project
+    const taskIter = tx.beginList(`/project-${projectId}`)
+    for await (const item of taskIter) {
+      if (client.isType(item, "Task")) {
+        await tx.del(`/project-${projectId}/task-${item.id}`)
+      }
+    }
+    // Delete the project itself
+    await tx.del(`/project-${projectId}`)
+  })
+  return
 }
 
 export async function getUserProjects(userId: bigint): Promise<Project[]> {
-  // This would need to be implemented based on your access patterns
-  // For now, we'll scan all projects and filter
   const iter = client.beginList(`/user-${userId}/project`)
-
   const projects: Project[] = [];
   for await (const item of iter) {
     if (client.isType(item, "Project")) {
