@@ -212,7 +212,7 @@ export function ProjectModal({
               </Button>
               <Button
                 type="submit"
-                disabled={!name.trim() || isLoading}
+                disabled={!name.trim() || !description.trim() || isLoading}
                 className="flex-1 h-12 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 transition-all duration-200 transform hover:scale-105 disabled:transform-none disabled:from-gray-400 disabled:to-gray-400"
               >
                 {isLoading ? (
