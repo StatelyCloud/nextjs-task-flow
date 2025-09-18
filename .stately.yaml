@@ -1,0 +1,4 @@
+language: "typescript"
+steps:
+  - name: "Run the app"
+    command: "npm run dev"
