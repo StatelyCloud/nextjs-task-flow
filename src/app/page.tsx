@@ -11,18 +11,12 @@ async function getStats() {
     const projects = await getUserProjects(BigInt(1))
     const projectCount = projects.length
 
-    let inProgressCount = 0
-    let completedCount = 0
+    let inProgressCount = BigInt(0)
+    let completedCount = BigInt(0)
 
     for (const project of projects) {
-      const tasks = await getProjectTasks(project.id)
-      for (const task of tasks) {
-        if (task.status === 'complete' || task.status === 'archived') {
-          completedCount++
-        } else {
-          inProgressCount++
-        }
-      }
+      completedCount += project.completedTaskCount
+      inProgressCount += project.taskCount - project.completedTaskCount
     }
 
     return {
@@ -50,9 +44,9 @@ export default async function HomePage() {
   const { projectCount, inProgressCount, completedCount } = await getStats()
 
   const stats = [
-    { title: 'Projects', value: projectCount, icon: <FolderIcon className="h-8 w-8" />, color: 'text-primary-600' },
-    { title: 'In Progress', value: inProgressCount, icon: <ClockIcon className="h-8 w-8" />, color: 'text-warning-600' },
-    { title: 'Completed', value: completedCount, icon: <CheckCircleIcon className="h-8 w-8" />, color: 'text-success-600' },
+    { title: 'Projects', value: projectCount.toString(), icon: <FolderIcon className="h-8 w-8" />, color: 'text-primary-600' },
+    { title: 'In Progress', value: inProgressCount.toString(), icon: <ClockIcon className="h-8 w-8" />, color: 'text-warning-600' },
+    { title: 'Completed', value: completedCount.toString(), icon: <CheckCircleIcon className="h-8 w-8" />, color: 'text-success-600' },
   ]
 
   return (
