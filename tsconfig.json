@@ -26,15 +26,6 @@
       "@/*": [
         "./src/*"
       ],
-      "@/components/*": [
-        "./src/components/*"
-      ],
-      "@/lib/*": [
-        "./src/lib/*"
-      ],
-      "@/app/*": [
-        "./src/app/*"
-      ]
     },
     "target": "esnext"
   },

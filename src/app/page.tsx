@@ -4,12 +4,41 @@ import { StatGrid } from '@/components/ui/stat-card'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { layoutClasses } from '@/lib/styles'
+import { getUserProjects, getProjectTasks } from '@/lib/stately'
 
-const stats = [
-  { title: 'Projects', value: '0', icon: <FolderIcon className="h-8 w-8" />, color: 'text-primary-600' },
-  { title: 'In Progress', value: '0', icon: <ClockIcon className="h-8 w-8" />, color: 'text-warning-600' },
-  { title: 'Completed', value: '0', icon: <CheckCircleIcon className="h-8 w-8" />, color: 'text-success-600' },
-]
+async function getStats() {
+  try {
+    const projects = await getUserProjects(BigInt(1))
+    const projectCount = projects.length
+
+    let inProgressCount = 0
+    let completedCount = 0
+
+    for (const project of projects) {
+      const tasks = await getProjectTasks(project.id)
+      for (const task of tasks) {
+        if (task.status === 'complete' || task.status === 'archived') {
+          completedCount++
+        } else {
+          inProgressCount++
+        }
+      }
+    }
+
+    return {
+      projectCount,
+      inProgressCount,
+      completedCount
+    }
+  } catch (error) {
+    console.error('Failed to fetch stats:', error)
+    return {
+      projectCount: 0,
+      inProgressCount: 0,
+      completedCount: 0
+    }
+  }
+}
 
 const features = [
   { icon: '⚡', title: 'Real-time Collaboration', desc: 'Work together in real-time with StatelyDB\'s powerful backend' },
@@ -17,7 +46,15 @@ const features = [
   { icon: '🚀', title: 'Fast & Scalable', desc: 'Built with Next.js 14+ for optimal performance' },
 ]
 
-export default function HomePage() {
+export default async function HomePage() {
+  const { projectCount, inProgressCount, completedCount } = await getStats()
+
+  const stats = [
+    { title: 'Projects', value: projectCount, icon: <FolderIcon className="h-8 w-8" />, color: 'text-primary-600' },
+    { title: 'In Progress', value: inProgressCount, icon: <ClockIcon className="h-8 w-8" />, color: 'text-warning-600' },
+    { title: 'Completed', value: completedCount, icon: <CheckCircleIcon className="h-8 w-8" />, color: 'text-success-600' },
+  ]
+
   return (
     <div className={layoutClasses.container}>
       <div className="text-center mb-12">
@@ -25,7 +62,7 @@ export default function HomePage() {
           ✨ TaskFlow
         </h1>
         <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-          A modern task management application built with Next.js 14+ and StatelyDB - 
+          A modern task management application built with Next.js 14+ and StatelyDB -
           learn how to build real-time, collaborative todo apps!
         </p>
       </div>
@@ -35,18 +72,41 @@ export default function HomePage() {
       <div className="text-center">
         <Card className="glass max-w-md mx-auto">
           <CardHeader>
-            <CardTitle className="text-2xl">Get Started with TaskFlow</CardTitle>
+            {projectCount === 0 ? (
+              <CardTitle className="text-2xl">Get Started with TaskFlow</CardTitle>
+            ) : (
+              <CardTitle className="text-2xl">Continue with TaskFlow</CardTitle>
+            )}
           </CardHeader>
           <CardContent className="text-center">
-            <p className="text-gray-600 mb-6">
-              Create your first project and start managing tasks like a pro!
-            </p>
-            <Link href="/projects/new">
-              <Button className={layoutClasses.flex.gap}>
-                <PlusIcon className="h-5 w-5" />
-                Create Your First Project
-              </Button>
-            </Link>
+            {(projectCount === 0) ? (
+              <>
+                <p className="text-gray-600 mb-6">
+                  Create your first project and start managing tasks like a pro!
+                </p>
+                <Link href="/projects/new">
+                  <Button className={layoutClasses.flex.gap}>
+                    <PlusIcon className="h-5 w-5" />
+                    Create Your First Project
+                  </Button>
+                </Link>
+              </>
+            ) : (
+              <div className="gap-4 flex flex-col">
+                <Link href="/projects/new">
+                  <Button className={layoutClasses.flex.gap}>
+                    <PlusIcon className="h-5 w-5" />
+                    Create Another Project
+                  </Button>
+                </Link>
+                <Link href="/projects">
+                  <Button className={layoutClasses.flex.gap}>
+                    <FolderIcon className="h-5 w-5" />
+                    View Your Projects
+                  </Button>
+                </Link>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
