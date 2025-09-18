@@ -81,7 +81,7 @@ export const layoutClasses = {
   container: 'mx-auto px-4 py-8',
   grid: {
     responsive: 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6',
-    stats: 'grid grid-cols-2 md:grid-cols-4 gap-4',
+    stats: 'grid grid-cols-2 md:grid-cols-3 gap-4',
   },
   flex: {
     between: 'flex items-center justify-between',
