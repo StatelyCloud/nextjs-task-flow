@@ -1,4 +1,6 @@
 language: "typescript"
 steps:
+  - name: "Install Dependencies"
+    command: "npm install"
   - name: "Run the app"
     command: "npm run dev"
