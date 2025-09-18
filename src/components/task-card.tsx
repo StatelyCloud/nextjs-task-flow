@@ -14,7 +14,7 @@ interface TaskCardProps {
   onDelete?: (taskId: bigint) => void
 }
 
-const formatDate = (timestamp?: bigint) => {
+export const formatDate = (timestamp?: bigint) => {
   if (!timestamp) return null
   return new Date(Number(timestamp) * 1000).toLocaleDateString('en-US', {
     month: 'short',
@@ -44,12 +44,10 @@ const TaskActions = ({ task, onEdit, onDelete }: Pick<TaskCardProps, 'task' | 'o
 )
 
 const TaskMeta = ({ task }: { task: Task }) => (
-  <div className={layoutClasses.flex.between}>
+  <div className={cn(layoutClasses.flex.between, layoutClasses.flex.gap)}>
     <span>Created {formatDate(task.createdAt)}</span>
     {Number(task.commentCount) > 0 && (
-      <span className={layoutClasses.flex.gap}>
-        💬 {Number(task.commentCount)}
-      </span>
+      <span>💬 {Number(task.commentCount)}</span>
     )}
   </div>
 )
@@ -114,8 +112,9 @@ export function TaskCard({ task, onStatusChange, onEdit, onDelete }: TaskCardPro
             <Badge variant="priority" priority={task.priority}>
               {task.priority}
             </Badge>
-            {task.dueDate && (
+            {task.dueDate > 0 && (
               <Badge className={cn(
+                // If due date is past, use danger colors, else primary colors
                 new Date(Number(task.dueDate) * 1000) < new Date()
                   ? 'bg-danger-100 text-danger-700'
                   : 'bg-primary-100 text-primary-700'

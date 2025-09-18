@@ -13,10 +13,12 @@
     "@heroicons/react": "^2.2.0",
     "@stately-cloud/client": "^0.35.2",
     "@stately-cloud/schema": "^0.34.4",
+    "@types/react-datepicker": "^6.2.0",
     "clsx": "^2.1.1",
     "framer-motion": "^12.23.13",
     "next": "15.5.3",
     "react": "^19.1.1",
+    "react-datepicker": "^8.7.0",
     "react-dom": "^19.1.1",
     "uuid": "^13.0.0"
   },

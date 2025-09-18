@@ -6,6 +6,7 @@ interface EditTaskData {
   description: string
   priority: 'low' | 'medium' | 'high' | 'urgent'
   tags: string[]
+  dueDate?: bigint
 }
 
 export function useTaskEditing() {
@@ -23,6 +24,7 @@ export function useTaskEditing() {
         description: updates.description,
         priority: updates.priority,
         tags: updates.tags,
+        dueDate: updates.dueDate !== undefined ? updates.dueDate : task.dueDate,
         updatedAt: BigInt(Math.floor(Date.now() / 1000))
       }
 

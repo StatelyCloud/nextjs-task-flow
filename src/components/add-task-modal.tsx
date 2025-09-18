@@ -4,6 +4,10 @@ import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Task } from '@/lib/stately'
+import { formatDate } from './task-card'
+import DatePicker from 'react-datepicker'
+import "react-datepicker/dist/react-datepicker.css"
+import "@/styles/datepicker.css"
 
 const priorityEmojis = {
   low: '🟢',
@@ -26,6 +30,7 @@ export function TaskModal({onClose, onSubmit, isLoading = false, editingTask = n
     description: string
     priority: 'low' | 'medium' | 'high' | 'urgent'
     tags: string[]
+    dueDate?: bigint
   }) => Promise<void>
   isLoading?: boolean
   editingTask?: Task | null
@@ -36,6 +41,7 @@ export function TaskModal({onClose, onSubmit, isLoading = false, editingTask = n
   const [priority, setPriority] = useState<'low' | 'medium' | 'high' | 'urgent'>('medium')
   const [tags, setTags] = useState<string[]>([])
   const [tagInput, setTagInput] = useState('')
+  const [dueDate, setDueDate] = useState<Date | null>(null)
 
   // Initialize form with editing task data when editing
   useEffect(() => {
@@ -44,6 +50,7 @@ export function TaskModal({onClose, onSubmit, isLoading = false, editingTask = n
       setDescription(editingTask.description)
       setPriority(editingTask.priority as 'low' | 'medium' | 'high' | 'urgent')
       setTags(editingTask.tags || [])
+      setDueDate(editingTask.dueDate && editingTask.dueDate > 0 ? new Date(Number(editingTask.dueDate) * 1000) : null)
     }
   }, [editingTask, mode])
 
@@ -55,7 +62,8 @@ export function TaskModal({onClose, onSubmit, isLoading = false, editingTask = n
       title: title.trim(),
       description: description.trim(),
       priority,
-      tags
+      tags,
+      dueDate: dueDate ? BigInt(Math.floor(dueDate.getTime() / 1000)) : undefined
     })
 
     // Only reset form after successful creation, not edit
@@ -65,6 +73,7 @@ export function TaskModal({onClose, onSubmit, isLoading = false, editingTask = n
       setPriority('low')
       setTags([])
       setTagInput('')
+      setDueDate(null)
     }
   }
 
@@ -75,6 +84,7 @@ export function TaskModal({onClose, onSubmit, isLoading = false, editingTask = n
       setPriority('low')
       setTags([])
       setTagInput('')
+      setDueDate(null)
     }
     onClose()
   }
@@ -227,14 +237,34 @@ export function TaskModal({onClose, onSubmit, isLoading = false, editingTask = n
               </div>
             </div>
 
+            <div className="space-y-3">
+              <label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                📅 Due Date
+              </label>
+              <div className="relative">
+                <DatePicker
+                  selected={dueDate}
+                  onChange={(date: Date | null) => setDueDate(date)}
+                  placeholderText="Select a due date (optional)"
+                  className="text-sm w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gray-50 focus:bg-white"
+                  disabled={isLoading}
+                  dateFormat="MMM d, yyyy"
+                  minDate={new Date()}
+                  isClearable
+                  showPopperArrow={false}
+                  calendarClassName="border-2 border-gray-200 rounded-xl shadow-lg"
+                />
+              </div>
+            </div>
+
             {mode === 'edit' && editingTask && (
-              <div className="space-y-2">
+              <div className="space-y-2 ">
                 <label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
                   📊 Current Status
                 </label>
-                <div className="p-3 bg-gray-50 rounded-lg border">
+                <div className="p-3 bg-gray-50 rounded-lg border border-gray-200 text-sm text-gray-700">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-600">Status:</span>
+                    <span>Status:</span>
                     <span className={`px-3 py-1 rounded-full text-xs font-medium capitalize ${
                       editingTask.status === 'completed' ? 'bg-green-100 text-green-800' :
                       editingTask.status === 'in-progress' ? 'bg-blue-100 text-blue-800' :
@@ -245,16 +275,22 @@ export function TaskModal({onClose, onSubmit, isLoading = false, editingTask = n
                     </span>
                   </div>
                   <div className="flex items-center justify-between mt-2">
-                    <span className="text-sm text-gray-600">Created:</span>
-                    <span className="text-sm text-gray-800">
-                      {new Date(Number(editingTask.createdAt) * 1000).toLocaleDateString()}
+                    <span>Created:</span>
+                    <span className="text-xs">
+                      {formatDate(editingTask.createdAt)}
                     </span>
                   </div>
-                  {editingTask.completedAt && (
+                  <div className="flex items-center justify-between mt-2">
+                    <span>Due:</span>
+                    <span className={editingTask.dueDate && new Date(Number(editingTask.dueDate) * 1000) < new Date() ? 'text-xs text-red-600 font-semibold' : 'text-xs'}>
+                      {formatDate(editingTask.dueDate) || 'No due date'}
+                    </span>
+                  </div>
+                  {editingTask.completedAt > 0 && (
                     <div className="flex items-center justify-between mt-2">
-                      <span className="text-sm text-gray-600">Completed:</span>
-                      <span className="text-sm text-gray-800">
-                        {new Date(Number(editingTask.completedAt) * 1000).toLocaleDateString()}
+                      <span>Completed:</span>
+                      <span className="text-xs">
+                        {formatDate(editingTask.completedAt)}
                       </span>
                     </div>
                   )}

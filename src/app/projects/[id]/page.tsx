@@ -99,6 +99,7 @@ export default function ProjectDetailPage() {
     description: string
     priority: 'low' | 'medium' | 'high' | 'urgent'
     tags: string[]
+    dueDate?: bigint
   }) => {
     try {
       // Convert the simple taskData to a full Task object for the API
@@ -112,7 +113,7 @@ export default function ProjectDetailPage() {
         creatorId: BigInt(1), // TODO: Replace with actual user ID
         tags: taskData.tags,
         isActive: true,
-        dueDate: BigInt(Date.now() + 7 * 24 * 60 * 60 * 1000), // Default due in 7 days
+        dueDate: taskData.dueDate || BigInt(0), // Use provided due date or 0 for no due date
         order: BigInt(1),
         commentCount: BigInt(0),
         completedAt: BigInt(0),
@@ -133,6 +134,7 @@ export default function ProjectDetailPage() {
     description: string
     priority: 'low' | 'medium' | 'high' | 'urgent'
     tags: string[]
+    dueDate?: bigint
   }) => {
     if (!editingTask) return
 
