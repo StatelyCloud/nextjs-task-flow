@@ -1,6 +1,6 @@
 # ✨ TaskFlow - Next.js + StatelyDB Tutorial
 
-A modern task management application built with Next.js 14+ and StatelyDB - learn how to build real-time, collaborative todo apps with StatelyDB's powerful backend!
+A modern task management application built with Next.js 15+ and StatelyDB - learn how to build real-time, collaborative todo apps with StatelyDB's powerful backend!
 
 ## ✨ Features
 
@@ -13,46 +13,17 @@ A modern task management application built with Next.js 14+ and StatelyDB - lear
 
 ## 🚀 Quick Start
 
-### 1. **Clone and Install**
+Follow the instructions after setting up the project to get started!
 
-```bash
-git clone https://github.com/StatelyCloud/nextjs-task-flow
-cd nextjs-task-flow
-npm install
-```
+[![Build with Stately](https://gist.githubusercontent.com/ryan-stately/51a07a4b3123f5cb89c8b9a1f3edf214/raw/158cb441aa65d05dd1a75b85dffad2feeb473f6b/build-icon.svg)](https://console.stately.cloud/new?repo=https%3A%2F%2Fgithub.com%2FStatelyCloud%2Fnextjs-task-flow)
 
-### 2. **Setup StatelyDB**
-
-1. Create a free account at [StatelyDB](https://stately.cloud)
-1. Create a new store and access key to get your credentials. Take note of the Access Key and Store ID.
-1. Click on the Schema ID of your newly created store, paste the contents of [the demo schema](/schema.ts) and click `Publish`.
-1. Install the Stately CLI and login
-
-   ```bash
-    curl -sL https://stately.cloud/install | sh
-    stately login
-   ```
-
-1. Generate the SDK
-   ```bash
-   stately schema generate --language typescript --schema-id <your_schema_id> ./generated
-   ```
-1. Rename and update the `.env.local.example` file in the project root:
-
-   ```bash
-   # rename to .env.local and update
-   STATELY_STORE_ID=your_store_id_here
-   STATELY_ACCESS_KEY=your_access_key_here
-   NEXT_PUBLIC_APP_URL=http://localhost:3000
-   ```
-
-### 3. **Run the Application**
+### 1. **Run the Application**
 
 ```bash
 npm run dev
 ```
 
-### 4. **Visit the App**
+### 2. **Visit the App**
 
 - Home page: http://localhost:3000/
 - Create your first project and start managing tasks!
@@ -62,119 +33,188 @@ npm run dev
 ```
 nextjs-task-flow/
 ├── src/
-│   ├── app/                    # Next.js 14 App Router
-│   │   ├── layout.tsx         # Root layout with global styles
-│   │   ├── page.tsx           # Home page
-│   │   ├── projects/          # Projects pages
-│   │   │   ├── page.tsx       # Projects list
-│   │   │   ├── new/           # Create project
-│   │   │   └── [id]/          # Project details
-│   │   └── globals.css        # Global Tailwind styles
-│   ├── components/            # Reusable React components
-│   │   ├── ui/                # Base UI components
-│   │   ├── task-card.tsx      # Task display component
-│   │   └── project-card.tsx   # Project display component
+│   ├── app/                     # Next.js 15 App Router
+│   │   ├── layout.tsx          # Root layout with global styles
+│   │   ├── page.tsx            # Home page with stats and features
+│   │   ├── projects/           # Projects management
+│   │   │   ├── page.tsx        # Projects list page
+│   │   │   ├── new/            # Create new project
+│   │   │   │   └── page.tsx    # New project form
+│   │   │   └── [id]/           # Dynamic project routes
+│   │   │       └── page.tsx    # Project details and tasks
+│   │   ├── api/                # API routes for server actions
+│   │   │   ├── projects/       # Project CRUD operations
+│   │   │   └── tasks/          # Task CRUD operations
+│   │   └── globals.css         # Global Tailwind styles
+│   ├── components/             # Reusable React components
+│   │   ├── ui/                 # Base UI components
+│   │   │   ├── button.tsx      # Button component
+│   │   │   ├── card.tsx        # Card component
+│   │   │   ├── badge.tsx       # Badge component
+│   │   │   ├── loading.tsx     # Loading indicators
+│   │   │   └── stat-card.tsx   # Statistics display
+│   │   ├── add-task-modal.tsx  # Task creation modal
+│   │   ├── project-card.tsx    # Project display component
+│   │   ├── project-modal.tsx   # Project creation/edit modal
+│   │   └── task-card.tsx       # Task display component
 │   └── lib/
-│       └── stately.ts         # StatelyDB integration layer
-├── generated/                 # StatelyDB generated code
-├── schema.ts                  # StatelyDB schema definition
-├── package.json               # Dependencies and scripts
-└── tailwind.config.js         # Tailwind CSS configuration
+│       ├── stately.ts          # StatelyDB integration layer
+│       └── styles.ts           # Shared style utilities
+├── generated/                  # StatelyDB generated code
+├── schema.ts                   # StatelyDB schema definition
+├── package.json                # Dependencies and scripts
+├── tailwind.config.ts          # Tailwind CSS configuration
+├── next.config.js              # Next.js configuration
+└── tsconfig.json               # TypeScript configuration
 ```
 
 ## 🔗 StatelyDB Integration
 
 This tutorial demonstrates key StatelyDB concepts:
 
-### **Models** (`src/lib/stately.ts`)
+### **Data Models** (`schema.ts`)
 
-- **Task**: Individual tasks with status, priority, and collaboration
-- **Project**: Project containers with progress tracking
-- **User**: User management and profiles
-- **Comment**: Task discussions and collaboration
-- **ProjectMember**: Team access control
+- **Task**: Individual tasks with status, priority, and collaboration features
+- **Project**: Project containers with progress tracking and customization
+- **User**: User management with themes and activity tracking
+- **Comment**: Task discussions and collaboration features
+- **ProjectMember**: Team access control and role management
 
 ### **Real-time Features**
 
 - Automatic updates when tasks change status
 - Live collaboration on project tasks
-- Real-time progress tracking
+- Real-time progress tracking across projects
+- Instant UI updates without manual refreshing
 
-### **Key Functions**
+### **Key Functions** (`src/lib/stately.ts`)
 
-- `taskHelpers.createTask()` - Create new tasks with StatelyDB
-- `taskHelpers.getProjectTasks()` - Efficiently fetch all project tasks
-- `projectHelpers.createProject()` - Set up new projects
-- `userHelpers.updateLastActive()` - Track user activity
+- `createTask()` - Create new tasks with automatic project updates
+- `updateTask()` - Update tasks with status change tracking
+- `getProjectTasks()` - Efficiently fetch all project tasks
+- `createProject()` - Set up new projects with user association
+- `getUserProjects()` - Get all projects for a specific user
+- `updateLastActive()` - Track user activity timestamps
+
+## 🎨 Technology Stack
+
+- **Next.js 15+**: Modern React framework with App Router and Server Components
+- **StatelyDB**: Real-time cloud database with automatic scaling and conflict resolution
+- **TypeScript**: Full type safety and enhanced developer experience
+- **Tailwind CSS**: Utility-first styling with custom design system and glass morphism
+- **Framer Motion**: Smooth animations and micro-interactions
+- **Heroicons**: Beautiful SVG icons for consistent UI
+- **React Server Components**: Optimal performance with server-side rendering
+
+## 🛠️ StatelyDB Schema Details
+
+### **Task Model**
+
+```typescript
+{
+  id: uint (sequence),           // Auto-generated unique ID
+  projectId: uint,               // Parent project reference
+  title: string,                 // Task name
+  description: string,           // Detailed description
+  status: string,                // todo | in-progress | completed | archived
+  priority: string,              // low | medium | high | urgent
+  assigneeId: uint,              // Assigned user ID
+  creatorId: uint,               // Creator user ID
+  dueDate?: timestampSeconds,    // Optional deadline
+  tags?: string[],               // Categorization tags
+  isActive: bool,                // Soft delete flag
+  order: uint,                   // Display position
+  commentCount?: uint,           // Discussion count
+  createdAt: timestampSeconds,   // Creation timestamp
+  updatedAt: timestampSeconds,   // Last modification
+  completedAt?: timestampSeconds // Completion timestamp
+}
+```
+
+### **Project Model**
+
+```typescript
+{
+  id: uint (rand53),             // Random unique ID
+  name: string,                  // Project title
+  description: string,           // Project overview
+  color: string,                 // Theme color
+  emoji: string,                 // Project icon
+  ownerId: uint,                 // Creator user ID
+  isActive: bool,                // Visibility flag
+  isPublic: bool,                // Access level
+  createdAt: timestampSeconds,   // Creation timestamp
+  updatedAt: timestampSeconds,   // Last modification
+  taskCount?: uint,              // Total tasks
+  completedTaskCount?: uint      // Finished tasks
+}
+```
+
+### **User Model**
+
+```typescript
+{
+  id: uint (rand53),             // Random unique ID
+  email: string,                 // User email
+  name: string,                  // Display name
+  avatar: string,                // Profile image/emoji
+  isActive?: bool,               // Account status
+  timezone: string,              // User timezone
+  theme: Theme,                  // UI preference (LIGHT/DARK/SYSTEM)
+  createdAt?: timestampSeconds,  // Registration date
+  lastActiveAt?: timestampSeconds // Activity tracking
+}
+```
+
+## 🚀 Development
+
+### **Available Scripts**
+
+```bash
+npm run dev          # Start development server (localhost:3000)
+npm run build        # Build for production
+npm run start        # Start production server
+npm run lint         # Run ESLint for code quality
+npm run type-check   # TypeScript type checking
+```
+
+### **Environment Variables**
+
+```bash
+# .env.local
+STATELY_STORE_ID=your_store_id_here
+STATELY_ACCESS_KEY=your_access_key_here
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+```
 
 ## 🎨 Customization
 
-### **Adding Task Priorities**
+### **Custom Themes**
 
-Edit the priority options in `src/components/task-card.tsx` to add new priority levels.
+Modify `src/app/globals.css` and `tailwind.config.ts` to add new color schemes and design tokens.
 
-### **Theming**
+### **Additional Fields**
 
-All styles are in `src/app/globals.css` and `tailwind.config.js` with CSS custom properties for easy theming.
+Extend the StatelyDB schema in https://console.stately.cloud, regenerate the client, and update the UI components accordingly.
 
-### **StatelyDB Schema**
+## 🔧 Advanced Features
 
-Check `generated/` directory to see the auto-generated StatelyDB types and client.
-
-## 🛠️ StatelyDB Models
-
-### **Task**
-
-- `id`: Unique identifier (auto-generated sequence)
-- `projectId`: Parent project reference
-- `title`: Task name
-- `description`: Detailed task description
-- `status`: Current state (todo, in-progress, completed, archived)
-- `priority`: Importance level (low, medium, high, urgent)
-- `assigneeId`: User assigned to task
-- `dueDate`: Optional deadline
-- `tags`: Comma-separated labels
-- `commentCount`: Number of discussions
-
-### **Project**
-
-- `id`: Unique identifier
-- `name`: Project title
-- `description`: Project overview
-- `color`: UI theme color
-- `emoji`: Project icon
-- `ownerId`: Project creator
-- `taskCount`: Total tasks
-- `completedTaskCount`: Finished tasks
-- `isPublic`: Visibility setting
-
-### **User**
-
-- `id`: Unique identifier
-- `email`: User email address
-- `name`: Display name
-- `avatar`: Profile image or emoji
-- `timezone`: User's timezone
-- `theme`: Preferred UI theme
-- `lastActiveAt`: Activity tracking
-
-## 🔧 Technical Details
-
-- **Next.js 14+**: Modern React framework with App Router
-- **StatelyDB**: Real-time cloud database with automatic scaling
-- **TypeScript**: Full type safety and developer experience
-- **Tailwind CSS**: Utility-first styling with custom design system
-- **Framer Motion**: Smooth animations and transitions
-- **React Server Components**: Optimal performance and SEO
+- **Optimistic Updates**: UI updates immediately with automatic rollback on errors
+- **Batch Operations**: Efficient bulk task operations with transactions
+- **Real-time Subscriptions**: Live data synchronization across browser tabs
+- **Conflict Resolution**: Automatic handling of concurrent edits
+- **Offline Support**: Local caching with sync when connection restored
 
 ## 🚀 Deployment
+
+### **Build and Deploy**
 
 1. Build the application: `npm run build`
 2. Set production environment variables
 3. Deploy to Vercel, Netlify, or your preferred platform
 4. Configure StatelyDB for production workloads
 
-### **Environment Variables**
+### **Production Environment Variables**
 
 ```bash
 STATELY_STORE_ID=your_production_store_id
@@ -182,26 +222,45 @@ STATELY_ACCESS_KEY=your_production_access_key
 NEXT_PUBLIC_APP_URL=https://your-domain.com
 ```
 
+### **Recommended Platforms**
+
+- **Vercel**: Optimal Next.js hosting with automatic deployments
+- **Netlify**: JAMstack deployment with edge functions
+- **AWS Amplify**: Full-stack deployment with CI/CD
+- **Railway**: Simple deployment with database integration
+
 ## 📚 Learning Resources
 
-- [StatelyDB Documentation](https://docs.stately.cloud)
-- [Next.js 14 Documentation](https://nextjs.org/docs)
-- [React Server Components](https://react.dev/reference/react/use-server)
-- [Tailwind CSS](https://tailwindcss.com/docs)
+- [StatelyDB Documentation](https://docs.stately.cloud) - Complete StatelyDB reference
+- [Next.js 15 Documentation](https://nextjs.org/docs) - Next.js App Router guide
+- [React Server Components](https://react.dev/reference/react/use-server) - Server-side rendering
+- [Tailwind CSS](https://tailwindcss.com/docs) - Utility-first CSS framework
+- [TypeScript Handbook](https://www.typescriptlang.org/docs/) - Type safety guide
 
 ## 🤝 Contributing
 
-This is a tutorial project - feel free to fork and extend it for your learning!
+This is a tutorial project designed for learning StatelyDB and Next.js concepts. Feel free to:
 
-### **Development**
+- Fork the repository for your own experiments
+- Submit issues for bugs or improvements
+- Create pull requests with enhancements
+- Share your own variations and extensions
 
-```bash
-npm run dev          # Start development server
-npm run build        # Build for production
-npm run lint         # Run ESLint
-npm run type-check   # TypeScript type checking
-```
+### **Development Workflow**
+
+1. Fork and clone the repository
+2. Install dependencies: `npm install`
+3. Set up your StatelyDB credentials
+4. Make your changes and test thoroughly
+5. Run linting and type checking
+6. Submit a pull request with clear description
 
 ## 📄 License
 
 MIT License - feel free to use this code for learning and building your own applications!
+
+---
+
+**Built with ❤️ using StatelyDB and Next.js**
+
+For questions or support, visit the [StatelyDB Discord](https://discord.gg/kzR3Etrp) or check out the [documentation](https://docs.stately.cloud).
