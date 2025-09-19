@@ -12,11 +12,13 @@ const client  = createClient({
 });
 
 const mapStatus = (lhs: Partial<Task>, rhs: Partial<Task>): "unchanged" | "complete" | "incomplete" => {
-  if (lhs.status === rhs.status) return "unchanged"
-  if (lhs.status === "complete" || lhs.status === "archived") {
+  const lhsComplete = lhs.status == "completed" || lhs.status === "archived"
+  const rhsComplete = rhs.status == "completed" || rhs.status === "archived"
+  if (lhsComplete === rhsComplete) return "unchanged"
+  if (lhsComplete) {
     return "incomplete"
   }
-  if (rhs.status === "complete" || rhs.status === "archived") {
+  if (rhsComplete) {
     return "complete"
   }
   return "unchanged"
@@ -45,10 +47,10 @@ export async function updateTask(updates: Partial<Task>): Promise<Task> {
     const existingTask = await tx.get("Task", `/project-${updates.projectId}/task-${updates.id}`)
     if (!existingTask) throw new Error('Task not found')
 
+    const statusChange = mapStatus(existingTask, updates)
     const updatedTask = { ...existingTask, ...updates }
     await tx.put(updatedTask)
     
-    const statusChange = mapStatus(existingTask, updates)
     if (statusChange != "unchanged") {
       const project = await tx.get("Project", `/project-${existingTask.projectId}`)
       if (!project) throw new Error('Project not found')
