@@ -5,6 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "login": "stately login",
+    "generate": "stately schema generate",
     "start": "next start",
     "lint": "next lint",
     "type-check": "tsc --noEmit"
@@ -23,6 +25,7 @@
     "uuid": "^13.0.0"
   },
   "devDependencies": {
+    "@stately-cloud/cli": "^0.92.0",
     "@tailwindcss/postcss": "^4.1.13",
     "@types/node": "^24.5.2",
     "@types/react": "^19.1.13",
