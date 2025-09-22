@@ -27,13 +27,9 @@ git clone https://github.com/StatelyCloud/nextjs-task-flow
 cd nextjs-task-flow
 ```
 
-**Install Dependencies**
-```bash setup Install Dependencies
+**Install Dependencies & Login**
+```bash setup Install Dependencies & Login
 npm install
-```
-
-**Login**
-```bash setup Login
 npm run login
 ```
 
