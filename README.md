@@ -17,9 +17,33 @@ Follow the instructions after setting up the project to get started!
 
 [![Build with Stately](https://gist.githubusercontent.com/ryan-stately/51a07a4b3123f5cb89c8b9a1f3edf214/raw/158cb441aa65d05dd1a75b85dffad2feeb473f6b/build-icon.svg)](https://console.stately.cloud/new?repo=https%3A%2F%2Fgithub.com%2FStatelyCloud%2Fnextjs-task-flow)
 
-### 1. **Run the Application**
+### ⚙️ Setting Up Locally
 
-```bash
+These steps are here for reference but you should have done them if you followed the "Build" button above.
+
+**Clone the Repo**
+```bash setup Clone the Repo
+git clone https://github.com/StatelyCloud/nextjs-task-flow
+cd nextjs-task-flow
+```
+
+**Install Dependencies**
+```bash setup Install Dependencies
+npm install
+```
+
+**Login**
+```bash setup Login
+npm run login
+```
+
+**Generate the SDK**
+```bash setup Generate the SDK
+npm run generate -- --language typescript --schema-id $SCHEMA_ID ./generated
+```
+
+**Start the Application**
+```bash setup Run the Application
 npm run dev
 ```
 
