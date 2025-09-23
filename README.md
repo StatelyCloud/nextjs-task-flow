@@ -2,6 +2,8 @@
 
 A modern task management application built with Next.js 15+ and StatelyDB - learn how to build real-time, collaborative todo apps with StatelyDB's powerful backend!
 
+<img src="preview.png" alt="preview" width="40%"/>
+
 ## ✨ Features
 
 - **Real-time Collaboration**: Work together seamlessly with StatelyDB's real-time updates
